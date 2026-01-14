@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+  <title>🌈 颜色小宝宝：拖一拖放一放</title>
+
+  <style>
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+      background:#f7f7ff;
+    }
+
+    h1{
+      text-align:center;
+      margin:16px 0 6px;
+      font-size:22px;
+    }
+
+    p{
+      text-align:center;
+      color:#555;
+      margin:0 10px 12px;
+      font-size:14px;
+    }
+
+    .status{
+      margin:10px;
+      padding:10px;
+      background:#eee;
+      border-radius:10px;
+      text-align:center;
+      font-weight:bold;
+    }
+
+    .ok{background:#d1fae5;color:#065f46;}
+    .bad{background:#fee2e2;color:#7f1d1d;}
+
+    .area{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:14px;
+      padding:12px;
+    }
+
+    .item{
+      width:90px;
+      height:90px;
+      border-radius:20px;
+      font-size:40px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:grab;
+      user-select:none;
+      touch-action:none;
+      box-shadow:0 6px 12px rgba(0,0,0,.2);
+      position:relative;
+      background:#fff;
+    }
+
+    .item span{
+      position:absolute;
+      bottom:-10px;
+      font-size:12px;
+      background:#fff;
+      padding:2px 6px;
+      border-radius:10px;
+      border:1px solid #ddd;
+    }
+
+    .item.placed{
+      opacity:.4;
+      cursor:default;
+    }
+
+    .zones{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:16px;
+      padding:10px;
+    }
+
+    .zone{
+      width:140px;
+      height:160px;
+      border-radius:20px;
+      border:4px dashed #ccc;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      font-weight:bold;
+      background:#fff;
+    }
+
+    .ring{
+      width:90px;
+      height:90px;
+      border-radius:50%;
+      border:10px solid;
+      margin-top:6px;
+    }
+
+    .red{border-color:#ef4444;}
+    .blue{border-color:#3b82f6;}
+    .white{border-color:#e5e7eb;}
+
+    button{
+      display:block;
+      margin:12px auto;
+      padding:10px 20px;
+      border:none;
+      border-radius:16px;
+      background:#111;
+      color:#fff;
+      font-size:16px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🌈 颜色小宝宝</h1>
+<p>把颜色小物体拖到正确的圈圈里吧～</p>
+
+<div id="status" class="status">开始拖动小物体吧 👇</div>
+
+<div class="area" id="items">
+  <div class="item" data-color="red">🍎<span>红色</span></div>
+  <div class="item" data-color="blue">🐳<span>蓝色</span></div>
+  <div class="item" data-color="white">☁️<span>白色</span></div>
+</div>
+
+<div class="zones">
+  <div class="zone" data-color="red">
+    红色圈圈
+    <div class="ring red"></div>
+  </div>
+  <div class="zone" data-color="blue">
+    蓝色圈圈
+    <div class="ring blue"></div>
+  </div>
+  <div class="zone" data-color="white">
+    白色圈圈
+    <div class="ring white"></div>
+  </div>
+</div>
+
+<button onclick="location.reload()">重新开始</button>
+
+<script>
+  const items = document.querySelectorAll('.item');
+  const zones = document.querySelectorAll('.zone');
+  const status = document.getElementById('status');
+
+  let dragging = null;
+
+  items.forEach(item=>{
+    item.addEventListener('pointerdown',e=>{
+      if(item.classList.contains('placed')) return;
+      dragging = item;
+      item.setPointerCapture(e.pointerId);
+    });
+
+    item.addEventListener('pointerup',e=>{
+      if(!dragging) return;
+
+      let success=false;
+      zones.forEach(zone=>{
+        const r = zone.getBoundingClientRect();
+        if(e.clientX>r.left && e.clientX<r.right &&
+           e.clientY>r.top && e.clientY<r.bottom){
+          if(zone.dataset.color === dragging.dataset.color){
+            dragging.classList.add('placed');
+            status.className='status ok';
+            status.textContent='✅ 放对啦，真棒！';
+            success=true;
+          }
+        }
+      });
+
+      if(!success){
+        status.className='status bad';
+        status.textContent='❌ 不对哦，再试一次！';
+      }
+
+      dragging=null;
+    });
+  });
+</script>
+
+</body>
+</html>
